@@ -9,7 +9,7 @@ import requests
 class ParserNews:
     settings={}
     def writeLog(self,msj):
-        f = open("tel.txt", "a")
+        f = open("logs.txt", "a")
         f.write("date:{0}".format(datetime.datetime.now()) + " "+msj+'\n')
         f.close()
     def sayHello(self):
@@ -39,6 +39,7 @@ class ParserNews:
                     letters = soup.select(l["criter"])
                     print("category:"+category+" url:"+url+"\n")
                     for link in letters:
+
                         ln=link.get("href").decode("utf-8")
 
                         if(ln.find("http://") < 0 and ln.find("https://") < 0):
@@ -49,12 +50,15 @@ class ParserNews:
                         tc=0#self.getTwitterCount(ln)
                         gc=self.getGoogleCount(ln)
                         title=""
-                        if(bool(l["title_in_img"])):
+
+                        if(l["title_in_img"]=="true"):
                             img=link.select("img")
                             if not(img is None):
                                 title=img[0]["alt"]
                         else:
+
                             title=link.get("title")
+
                         self.callStoredProc(cnxn,"dbo.SetDb",ln,title,category,cnt,tc,gc)
                 except Exception as e:
                     self.writeLog(str(e))
