@@ -1,0 +1,36 @@
+{
+"categories":
+[
+{"name":"gündem",
+"links":
+[
+{"url":"http://www.hurriyet.com.tr","criter":".mansetSlider > li > a","title_in_img":"false"},
+{"url":"http://www.sabah.com.tr","criter":"#headline > .news > a","title_in_img":"false"},
+{"url":"http://www.haber7.com","criter":"#headline > .news > a","title_in_img":"false"},
+{"url":"http://www.sozcu.com.tr","criter":".manset-img > a","title_in_img":"false"},
+{"url":"http://www.diken.com.tr","criter":".slide-image > a","title_in_img":"true"},
+{"url":"http://www.star.com.tr","criter":".mansetv2 > a","title_in_img":"false"},
+{"url":"http://www.yenisafak.com","criter":".swiper-slide > a","title_in_img":"false"},
+{"url":"http://www.haberturk.com","criter":".group > .ga-track","title_in_img":"false"},
+{"url":"http://t24.com.tr","criter":".gallery > .slide-wrapper > a","title_in_img":"true"}
+]
+},
+{
+"name":"spor",
+"links":
+[
+{"url":"http://www.hurriyet.com.tr/spor","criter":"ol > li >  a","title_in_img":"false"},
+{"url":"http://www.fotomac.com.tr","criter":".items > li > a","title_in_img":"true"},
+{"url":"http://www.fanatik.com.tr","criter":".carousel-inner > a","title_in_img":"false"},
+{"url":"http://www.ntvspor.net","criter":".carousel-inner > .item > a","title_in_img":"true"}
+]
+},
+{
+"name":"Teknoloji",
+"links":
+[
+{"url":"http://webrazzi.com","criter":".post-title > h2 > a","title_in_img":"false"}
+]
+}
+]
+}
