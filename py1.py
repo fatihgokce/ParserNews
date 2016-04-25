@@ -9,6 +9,7 @@ import time
 import json
 import datetime
 import requests
+import re
 class ParseSiteDb:
      orders={
      'cell_name_order':{'db':0,'file':0}
@@ -54,7 +55,7 @@ class ParseSiteDb:
          dict["twitter"]="teee"
          print(dict["facebook"])
          self.userAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.97 Safari/537.11"
-         url ='http://www.hurriyet.com.tr/son-dakika/'
+         url ='http://www.hurriyet.com.tr/meteoroloji-hava-sicakliklari-10-15-derece-azalacak-40091200'
             #http://www.sabah.com.tr/'  ##headline > .news > a
             #'http://www.haber7.com/'  ##headline > .news > a
             #'http://www.hurriyet.com.tr/' .mansetSlider > li > a
@@ -66,16 +67,18 @@ class ParseSiteDb:
          #newsTitle
          #print(html)
          #page = resp.read()
-         criter=".sonDkIc > .sonYazi > .sonDkIc-A1 > .sonDkSutun > .sonYazi > a"
+         criter=".news-box > p"
          soup = BeautifulSoup(html,"html.parser")
          letters = soup.select(criter) #.mansetSlider > li > a#sliderPager > li > a #find_all("li", class_="sliderPager")
+         x = re.compile(r'<[aA][^>]*>([^<]+)</[aA]>')
+         letters=x.sub('', str(letters))
+         print letters;
 
 
 
 
-
-         for link in letters:
-             print(link)
+         #for link in letters:
+             #print(link.get("title"))
              #print(link.select("img")[0]["alt"])
         #      if(l.find("http://") == -1 or l.find("https://") == -1):
         #          l=url+l;
@@ -118,13 +121,13 @@ class ParseSiteDb:
 
 
          #print("calling",letters)
-         self.path2g='VF_2G_SITES.txt'
-         self.path3g='VF_3G_SITES.txt'
+         #self.path2g='VF_2G_SITES.txt'
+         #self.path3g='VF_3G_SITES.txt'
          ##self.ary_script={'2g_type':[],'3g_type':[]}
          #print "before call"
          #cnxn.close()
          #self.sayHello()
-         print(len(letters))
+         #print(len(letters))
      def sayHello(self):
          print ('hello:',self.cell_number_order["file"])
 

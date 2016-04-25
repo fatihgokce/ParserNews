@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv='content-type' content='text/html; charset=utf-8'>
+    <title>CCMF</title>
+    <script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js'></script>
+    <script type='text/javascript'>
+        var rr;
+        $(document).ready(function () {
+            $('button').on('click', function () {
+                var request = $.ajax({
+                    url: 'http://127.0.0.1:8081/getData',
+                    crossDomain: true,
+                    dataType: 'json',
+                    data: {
+                        "url": $("#txt1").val() //"http://www.hurriyet.com.tr/vanda-catisma-cikti-bir-polis-sehit-oldu-40090903"
+                    }
+
+
+                })
+
+                request.done(function (response) {
+                    rr = response;
+                    $("#img1").attr("src", rr.img);
+                    $('#div1').html(response.pr);
+                    $('#baz').text(response.baz);
+                });
+                request.fail(function (jqXHR, textStatus) {
+                    alert('Request failed: ' + textStatus);
+                });
+            })
+        });
+    </script>
+</head>
+
+<body>
+    <button>make ajax call</button>
+    <input type="text" id="txt1" width="500px" height="80px" style="width:500px">
+    <img id="img1" src="">
+    <div id="div1">
+
+    </div>
+    <h1>Foo</h1>
+    <div id='foo'></div>
+    <h1>Baz</h1>
+    <div id='baz'></div>
+</body>
+
+</html>
