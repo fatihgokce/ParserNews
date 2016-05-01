@@ -61,10 +61,11 @@ class RootServer:
         res["img"]=img['src']
         pr = ""
         for p in letters:
-            str1 = str(p).replace("<br>","\n").replace('"',"##")
+            str1 = str(p).replace("<p>","\n[#pp#]").replace("<br>","\n").replace('"',"##")
+            str1 = str1.replace("[#pp#]","<p>")
             pr += strip_tags(str1)
      
-        res["pr"] = pr.encode("utf-8")  #html.encode('latin1')
+        res["pr"] = pr #.encode("utf-8")  #html.encode('latin1')
         #json_obj = cherrypy.request.json
         res["url"]=cherrypy.request.params["url"]
         #print letters[0];
