@@ -10,6 +10,27 @@ import json
 import datetime
 import requests
 import re
+
+from HTMLParser import HTMLParser
+
+class MLStripper(HTMLParser):
+    def __init__(self):
+        self.reset()
+        self.fed = []
+    def handle_data(self, d):
+        self.fed.append(d)
+    def get_data(self):
+        return ''.join(self.fed)
+
+def strip_tags(html):
+    parser = HTMLParser()  
+    html = parser.unescape(html)
+    s = MLStripper()
+    s.feed(html)
+    return s.get_data()
+
+
+
 class ParseSiteDb:
      orders={
      'cell_name_order':{'db':0,'file':0}
@@ -41,6 +62,11 @@ class ParseSiteDb:
         except Exception as e:
             print(e)
             return -1
+
+     def writeLog(self,msj):
+        f = open("logs.txt", "a")
+        f.write("date:{0}".format(datetime.datetime.now()) + " "+msj+'\n')
+        f.close()
      def __init__(self):
 
          #for arg in sys.argv:
@@ -49,13 +75,14 @@ class ParseSiteDb:
          #time.sleep(1000)
          #print("after:%s" % c)
          #self.writeLog("err")
+
          print 'starting..:',str(datetime.datetime.now())
          dict={}
          dict["facebook"]="ffff"
          dict["twitter"]="teee"
-         print(dict["facebook"])
+         #print(dict["facebook"])
          self.userAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.97 Safari/537.11"
-         url ='http://www.hurriyet.com.tr/meteoroloji-hava-sicakliklari-10-15-derece-azalacak-40091200'
+         url ='http://www.hurriyet.com.tr/genc-futbolcu-hayatini-kaybetti-40097576'
             #http://www.sabah.com.tr/'  ##headline > .news > a
             #'http://www.haber7.com/'  ##headline > .news > a
             #'http://www.hurriyet.com.tr/' .mansetSlider > li > a
@@ -70,9 +97,19 @@ class ParseSiteDb:
          criter=".news-box > p"
          soup = BeautifulSoup(html,"html.parser")
          letters = soup.select(criter) #.mansetSlider > li > a#sliderPager > li > a #find_all("li", class_="sliderPager")
-         x = re.compile(r'<[aA][^>]*>([^<]+)</[aA]>')
-         letters=x.sub('', str(letters))
-         print letters;
+
+         
+         html = ""
+         for p in letters:
+            str1 = str(p).replace("<br>","\n")
+            html += strip_tags(str1)
+            print("kk")
+        
+
+
+
+         self.writeLog(html) #.encode("utf-8","ignore")
+
 
 
 

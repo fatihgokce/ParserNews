@@ -8,6 +8,25 @@ import time
 import requests
 import json
 import re
+from HTMLParser import HTMLParser
+
+class MLStripper(HTMLParser):
+    def __init__(self):
+        self.reset()
+        self.fed = []
+    def handle_data(self, d):
+        self.fed.append(d)
+    def get_data(self):
+        return ''.join(self.fed)
+
+def strip_tags(html):
+    parser = HTMLParser()  
+    html = parser.unescape(html)
+    s = MLStripper()
+    s.feed(html)
+    return s.get_data()
+
+
 class RootServer:
     @cherrypy.tools.json_out()
     @cherrypy.tools.json_in()
@@ -40,12 +59,12 @@ class RootServer:
         img=soup.select(".news-image > img")[0]
         res={}
         res["img"]=img['src']
-        for l in letters:
-            msj = msj + str(l)#.getText()
-        #x = re.compile(r'</?[aA]\>[^>]*?/?>')
-        x = re.compile(r'''</?a((s+w+(s*=s*(?:".*?"|'.*?'|[^'">s]+))?)+s*|s*)/?>w+</a>''')
-            #compile(r'<[aA][^>]*>([^<]+)</[aA]>')
-        res["pr"]=x.sub('', msj)
+        pr = ""
+        for p in letters:
+            str1 = str(p).replace("<br>","\n").replace('"',"##")
+            pr += strip_tags(str1)
+     
+        res["pr"] = pr.encode("utf-8")  #html.encode('latin1')
         #json_obj = cherrypy.request.json
         res["url"]=cherrypy.request.params["url"]
         #print letters[0];
@@ -69,7 +88,8 @@ if __name__ == '__main__':
     }
     #cherrypy.quickstart(RootServer(), '/d/', conf)
     cherrypy.tree.mount(RootServer())
-
+    cherrypy.config["tools.encode.on"] = True
+    cherrypy.config["tools.encode.encoding"] = "utf-8"
     cherrypy.server.unsubscribe()
 
 

@@ -58,8 +58,8 @@ class ParserNews:
                         else:
 
                             title=link.get("title")
-
-                        self.callStoredProc(cnxn,"dbo.SetDb",ln,title,category,cnt,tc,gc)
+                        self.writeLog(title.encode('utf-8') ) 
+                        #self.callStoredProc(cnxn,"dbo.SetDb",ln,title,category,cnt,tc,gc)
                 except Exception as e:
                     self.writeLog(str(e))
 
