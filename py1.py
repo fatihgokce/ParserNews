@@ -12,6 +12,19 @@ import requests
 import re
 
 from HTMLParser import HTMLParser
+class UserComment:
+    def __init__(self,un,cm):
+        self.userName=un
+        self.comment =cm
+
+class post:
+
+
+
+    def __init__(self):
+        self.comments=[]
+        self.title = ""
+        self.sourceName = ""
 
 class MLStripper(HTMLParser):
     def __init__(self):
@@ -23,7 +36,7 @@ class MLStripper(HTMLParser):
         return ''.join(self.fed)
 
 def strip_tags(html):
-    parser = HTMLParser()  
+    parser = HTMLParser()
     html = parser.unescape(html)
     s = MLStripper()
     s.feed(html)
@@ -87,28 +100,52 @@ class ParseSiteDb:
             #'http://www.haber7.com/'  ##headline > .news > a
             #'http://www.hurriyet.com.tr/' .mansetSlider > li > a
 
-         req = urllib2.Request(url, headers={'User-Agent':self.userAgent})
-         html = urllib2.urlopen(req, timeout=5).read()
-         #resp = urllib2.urlopen('http://www.hurriyet.com.tr/',headers={'User-Agent':self.userAgent})
-        #and read the normal way ie
-         #newsTitle
-         #print(html)
-         #page = resp.read()
-         criter=".news-box > p"
-         soup = BeautifulSoup(html,"html.parser")
-         letters = soup.select(criter) #.mansetSlider > li > a#sliderPager > li > a #find_all("li", class_="sliderPager")
+         #req = urllib2.Request(url, headers={'User-Agent':self.userAgent})
+         #html = urllib2.urlopen(req, timeout=5).read()
 
-         
+         criter=".news-box > p"
+         #soup = BeautifulSoup(html,"html.parser")
+         #letters = soup.select(criter) #.mansetSlider > li > a#sliderPager > li > a #find_all("li", class_="sliderPager")
+
+         letters =[]
          html = ""
          for p in letters:
             str1 = str(p).replace("<br>","\n")
             html += strip_tags(str1)
             print("kk")
-        
 
 
 
-         self.writeLog(html) #.encode("utf-8","ignore")
+         posts = []
+         p1 = post()
+         p1.title = "deneme"
+         p1.sourceName="hürriyet"
+         cm1= UserComment("fatih","comment1")
+         p1.comments.append(cm1)
+
+         posts.append(p1)
+         p2 = post()
+         p2.title = "trrcdfc"
+         p2.sourceName="sözcü"
+         cm2= UserComment("fatih","comment1")
+         p2.comments.append(cm2)
+         posts.append(p2)
+         js ='{"posts":['
+
+         for j in posts:
+             js1=""
+             js1+='{ "title":"'+j.title+'","sourceName":"'+j.sourceName+'"'
+             js1+=',"comments":['
+             for cm in j.comments:
+                 strC= '{"userName":"'+cm.userName+'","userComment":"'+cm.comment+'"},'
+                 js1+=strC
+             js1=js1[:-1]
+             js1+="]},"
+
+             js+=js1
+         js=js[:-1]
+         js +=']}'
+         self.writeLog(js ) #.encode("utf-8","ignore")
 
 
 

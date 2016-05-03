@@ -9,6 +9,19 @@ import requests
 import json
 import re
 from HTMLParser import HTMLParser
+class UserComment:
+    def __init__(self,un,cm):
+        self.userName=un
+        self.comment =cm
+
+class post:
+
+
+
+    def __init__(self):
+        self.comments=[]
+        self.title = ""
+        self.sourceName = ""
 
 class MLStripper(HTMLParser):
     def __init__(self):
@@ -20,13 +33,42 @@ class MLStripper(HTMLParser):
         return ''.join(self.fed)
 
 def strip_tags(html):
-    parser = HTMLParser()  
+    parser = HTMLParser()
     html = parser.unescape(html)
     s = MLStripper()
     s.feed(html)
     return s.get_data()
 
+def toJson():
+    posts = []
+    p1 = post()
+    p1.title = "deneme"
+    p1.sourceName="hürriyet"
+    cm1= UserComment("fatih","comment1")
+    p1.comments.append(cm1)
 
+    posts.append(p1)
+    p2 = post()
+    p2.title = "trrcdfc"
+    p2.sourceName="sözcü"
+    cm2= UserComment("fatih","comment1")
+    p2.comments.append(cm2)
+    posts.append(p2)
+    js ='{"posts":['
+
+    for j in posts:
+        js1=""
+        js1+='{ "title":"'+j.title+'","sourceName":"'+j.sourceName+'"'
+        js1+=',"comments":['
+        for cm in j.comments:
+            strC= '{"userName":"'+cm.userName+'","userComment":"'+cm.comment+'"},'
+            js1+=strC
+        js1=js1[:-1]
+        js1+="]},"
+
+        js+=js1
+    js=js[:-1]
+    js +=']}'
 class RootServer:
     @cherrypy.tools.json_out()
     @cherrypy.tools.json_in()
@@ -61,10 +103,10 @@ class RootServer:
         res["img"]=img['src']
         pr = ""
         for p in letters:
-            str1 = str(p).replace("<p>","\n[#pp#]").replace("<br>","\n").replace('"',"##")
-            str1 = str1.replace("[#pp#]","<p>")
+            str1 = str(p).replace("</p>","\n[#pp#]").replace("<br>","\n").replace('"',"##")
+            str1 = str1.replace("[#pp#]","</p>")
             pr += strip_tags(str1)
-     
+
         res["pr"] = pr #.encode("utf-8")  #html.encode('latin1')
         #json_obj = cherrypy.request.json
         res["url"]=cherrypy.request.params["url"]
