@@ -9,6 +9,7 @@ import requests
 import json
 import re
 from HTMLParser import HTMLParser
+import pyodbc
 class UserComment:
     def __init__(self,un,cm):
         self.userName=un
@@ -17,9 +18,11 @@ class UserComment:
 class post:
 
 
-
+    def default(self, o):
+        return o.__dict__
     def __init__(self):
-        self.comments=[]
+
+        self.link=""
         self.title = ""
         self.sourceName = ""
 
@@ -39,37 +42,46 @@ def strip_tags(html):
     s.feed(html)
     return s.get_data()
 
-def toJson():
-    posts = []
-    p1 = post()
-    p1.title = "deneme"
-    p1.sourceName="hürriyet"
-    cm1= UserComment("fatih","comment1")
-    p1.comments.append(cm1)
+def toJson(posts):
 
-    posts.append(p1)
-    p2 = post()
-    p2.title = "trrcdfc"
-    p2.sourceName="sözcü"
-    cm2= UserComment("fatih","comment1")
-    p2.comments.append(cm2)
-    posts.append(p2)
     js ='{"posts":['
 
     for j in posts:
         js1=""
-        js1+='{ "title":"'+j.title+'","sourceName":"'+j.sourceName+'"'
-        js1+=',"comments":['
-        for cm in j.comments:
-            strC= '{"userName":"'+cm.userName+'","userComment":"'+cm.comment+'"},'
-            js1+=strC
-        js1=js1[:-1]
-        js1+="]},"
+        js1+='{ "title":"'+j.title+'","sourceName":"'+j.sourceName+'","link":"'+j.link+'"'
+
+        js1+="},"
 
         js+=js1
     js=js[:-1]
     js +=']}'
+    return js
 class RootServer:
+    @cherrypy.tools.json_out()
+    @cherrypy.tools.json_in()
+    @cherrypy.expose
+    def getByCategory(self,ct):
+        cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
+        posts=[]
+        cnxn = pyodbc.connect("DRIVER={SQL Server};SERVER=198.38.92.235;DATABASE=FeedNews;UID=sa;PWD=Sapass..123")
+        cursor = cnxn.cursor()
+
+
+         #cursor.execute("insert into test_tb values(6, 'name')")
+         #print("gündem".encode("utf-8","ignore"))
+         #print("EXEC  %s" % ("gündem"))
+        cursor =  cursor.execute(" EXEC [dbo].[GetDataByCategory] @category = N'%s' " % (ct))
+        rows = cursor.fetchall()
+        for row in rows:
+            p1={}
+            p1["link"]=row.url
+            p1["title"]=row.title
+            p1["sourceName"]=str.split(str(p1["link"]),".")[1]
+            posts.append(p1)
+
+        #res =toJson(posts)  #json.dumps([ob.__dict__ for ob in posts]) #toJson(posts)
+        cnxn.close()
+        return posts
     @cherrypy.tools.json_out()
     @cherrypy.tools.json_in()
     @cherrypy.expose
@@ -82,7 +94,7 @@ class RootServer:
         cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
         userAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.97 Safari/537.11"
         #self.userAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.97 Safari/537.11"
-        url2 ='http://www.hurriyet.com.tr/olu-yunus-karaya-vurdu-40090917'
+
             #http://www.sabah.com.tr/'  ##headline > .news > a
             #'http://www.haber7.com/'  ##headline > .news > a
             #'http://www.hurriyet.com.tr/' .mansetSlider > li > a
@@ -94,11 +106,14 @@ class RootServer:
          #newsTitle
          #print(html)
          #page = resp.read()
-        criter=".news-box > p"
+
+        host_name=str.split(str(url),".")[1]
+        print("c:" + host_name) #detailJson[host_name]["criter_paragraph"])
+        criter=self.detailJson[host_name]["criter_paragraph"] #".news-box > p"
         msj=""
         soup = BeautifulSoup(html,"html.parser")
         letters = soup.select(criter) #.mansetSlider > li > a#sliderPager > li > a #find_all("li", class_="sliderPager")
-        img=soup.select(".news-image > img")[0]
+        img=soup.select(self.detailJson[host_name]["criter_image"])[0]
         res={}
         res["img"]=img['src']
         pr = ""
@@ -113,11 +128,19 @@ class RootServer:
         #print letters[0];
         #cherrypy.response.headers['Content-Type'] = 'application/json'
         return res
+    def __init__(self):
+        self.detailJson={}
+        self.readdetailJson()
+    def readdetailJson(self):
+        json_data=open('detail.json',"r").read()
+        self.detailJson = json.loads(json_data)
+
 def CORS():
     cherrypy.response.headers["Access-Control-Allow-Origin"] = "*"
 if __name__ == '__main__':
 
     #cherrypy.tools.CORS = cherrypy.Tool('before_handler', CORS)
+
 
     site_config = {
         '/static': {

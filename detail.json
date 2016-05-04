@@ -1,0 +1,35 @@
+{
+
+	"hurriyet": {
+		"criter_paragraph": ".news-box > p",
+		"criter_image": ".news-image > img"
+	},
+  "sozcu":{
+    "criter_paragraph": ".news-body > p",
+    "criter_image": ".detail-news-img > img"
+  },
+  "haber7":{
+    "criter_paragraph": ".news-content > p",
+    "criter_image": ".media > img"
+  },
+  "diken":{
+    "criter_paragraph": ".wp-caption > p",
+    "criter_image": ".wp-caption > img"
+  },
+  "haberturk":{
+    "criter_paragraph": ".news-content-text > p",
+    "criter_image": ".news-img  > img"
+  },
+  "fotomac":{
+    "criter_paragraph": ".story > p",
+    "criter_image": ".zoom > img"
+  },
+  "ntvspor":{
+    "criter_paragraph": "#newsText > p ",
+    "criter_image": ".carousel-inner > .item > img"
+  }
+
+
+
+
+}

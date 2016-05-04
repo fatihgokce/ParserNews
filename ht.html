@@ -10,11 +10,11 @@
         $(document).ready(function () {
             $('button').on('click', function () {
                 var request = $.ajax({
-                    url: 'http://127.0.0.1:8081/getData',
+                    url: 'http://127.0.0.1:8081/getByCategory',
                     crossDomain: true,
                     dataType: 'json',
                     data: {
-                        "url": $("#txt1").val() //"http://www.hurriyet.com.tr/vanda-catisma-cikti-bir-polis-sehit-oldu-40090903"
+                        "ct": $("#txt1").val() //"http://www.hurriyet.com.tr/vanda-catisma-cikti-bir-polis-sehit-oldu-40090903"
                     }
 
 
@@ -22,9 +22,9 @@
 
                 request.done(function (response) {
                     rr = response;
-                    $("#img1").attr("src", rr.img);
-                    $('#div1').html(response.pr);
-                    $('#baz').text(response.baz);
+                    //$("#img1").attr("src", rr.img);
+                    //$('#div1').html(response.pr);
+                    //$('#baz').text(response.baz);
                 });
                 request.fail(function (jqXHR, textStatus) {
                     alert('Request failed: ' + textStatus);

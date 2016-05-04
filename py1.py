@@ -57,6 +57,11 @@ class ParseSiteDb:
      cell_number_order={'db_column_name':'CELL_NUMBER','file':7}
      system_type_order={'db_column_name':'SYSTEM_TYPE','file':13}
      ary_script={'2g_type':[],'3g_type':[]}
+     def readSetting(self):
+         json_data=open('settings.json',"r").read()
+         data = json.loads(json_data)
+         self.settings["dbCs"]=data["dbCs"]
+
      def writeLog(self,msj):
          f = open("tel.txt", "a")
          f.write("date:{0}".format(datetime.datetime.now()) + " "+msj+'\n')
@@ -75,6 +80,9 @@ class ParseSiteDb:
         except Exception as e:
             print(e)
             return -1
+     def readdetailJson(self):
+          json_data=open('detail.json',"r").read()
+          self.detailJson = json.loads(json_data)
 
      def writeLog(self,msj):
         f = open("logs.txt", "a")
@@ -88,65 +96,30 @@ class ParseSiteDb:
          #time.sleep(1000)
          #print("after:%s" % c)
          #self.writeLog("err")
-
+         self.settings={}
+         self.detailJson={}
+         self.readSetting()
+         self.readdetailJson()
          print 'starting..:',str(datetime.datetime.now())
          dict={}
          dict["facebook"]="ffff"
          dict["twitter"]="teee"
          #print(dict["facebook"])
          self.userAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.97 Safari/537.11"
-         url ='http://www.hurriyet.com.tr/genc-futbolcu-hayatini-kaybetti-40097576'
+         url ='http://www.ntvspor.net/haber/haber-t/154475/yonetimden-kombine-indirimi'
             #http://www.sabah.com.tr/'  ##headline > .news > a
             #'http://www.haber7.com/'  ##headline > .news > a
             #'http://www.hurriyet.com.tr/' .mansetSlider > li > a
 
-         #req = urllib2.Request(url, headers={'User-Agent':self.userAgent})
-         #html = urllib2.urlopen(req, timeout=5).read()
+         req = urllib2.Request(url, headers={'User-Agent':self.userAgent})
+         html = urllib2.urlopen(req, timeout=5).read()
+         host_name=str.split(url,".")[1]
 
-         criter=".news-box > p"
-         #soup = BeautifulSoup(html,"html.parser")
-         #letters = soup.select(criter) #.mansetSlider > li > a#sliderPager > li > a #find_all("li", class_="sliderPager")
-
-         letters =[]
-         html = ""
-         for p in letters:
-            str1 = str(p).replace("<br>","\n")
-            html += strip_tags(str1)
-            print("kk")
-
-
-
-         posts = []
-         p1 = post()
-         p1.title = "deneme"
-         p1.sourceName="hürriyet"
-         cm1= UserComment("fatih","comment1")
-         p1.comments.append(cm1)
-
-         posts.append(p1)
-         p2 = post()
-         p2.title = "trrcdfc"
-         p2.sourceName="sözcü"
-         cm2= UserComment("fatih","comment1")
-         p2.comments.append(cm2)
-         posts.append(p2)
-         js ='{"posts":['
-
-         for j in posts:
-             js1=""
-             js1+='{ "title":"'+j.title+'","sourceName":"'+j.sourceName+'"'
-             js1+=',"comments":['
-             for cm in j.comments:
-                 strC= '{"userName":"'+cm.userName+'","userComment":"'+cm.comment+'"},'
-                 js1+=strC
-             js1=js1[:-1]
-             js1+="]},"
-
-             js+=js1
-         js=js[:-1]
-         js +=']}'
-         self.writeLog(js ) #.encode("utf-8","ignore")
-
+         criter= self.detailJson[host_name]["criter_paragraph"] #".news-box > p"
+         soup = BeautifulSoup(html,"html.parser")
+         letters = soup.select(criter) #.mansetSlider > li > a#sliderPager > li > a #find_all("li", class_="sliderPager")
+         img=soup.select(self.detailJson[host_name]["criter_image"])[0]
+         print("img:%s pr:%s" %(img,letters[0]) )
 
 
 
@@ -204,7 +177,12 @@ class ParseSiteDb:
          #print(len(letters))
      def sayHello(self):
          print ('hello:',self.cell_number_order["file"])
+     def callStoredProc(self,conn, procName, *args):
+         sql = """SET NOCOUNT ON;
 
+         EXEC  %s %s
+         """ % (procName, ','.join(['?'] * len(args)))
+         return conn.execute(sql, args)
 def main():
 
     demo=ParseSiteDb()

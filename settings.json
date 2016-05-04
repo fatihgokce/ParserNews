@@ -1,4 +1,4 @@
 {
-"dbCs":"DRIVER={SQL Server};SERVER=LENOVO-PC;DATABASE=Sample;UID=sa;PWD=Sapass..123",
-"sleep":"5"
+    "dbCs": "DRIVER={SQL Server};SERVER=198.38.92.235;DATABASE=FeedNews;UID=sa;PWD=Sapass..123",
+    "sleep": "5"
 }
