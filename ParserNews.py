@@ -14,6 +14,13 @@ class ParserNews:
         f.close()
     def sayHello(self):
         print ('hello:',self.aa)
+    def isOutLinks(self,criterArray,link):
+
+        ret = 0
+        for cr in criterArray:
+            if(link.find(cr) > 0):
+                return 1
+        return ret
     def __init__(self):
         self.readSetting()
         print "Start : %s" % time.ctime()
@@ -27,6 +34,8 @@ class ParserNews:
         #print(self.settings["dbCs"])
         cnxn = pyodbc.connect(self.settings["dbCs"])
         #print(settings["dbCs"])
+        outLinkCriters = data["out_link_criter"]
+        #print(outLinkCriters)
         for c in data['categories']:
             category = c["name"]
             for l in c["links"]:
@@ -37,29 +46,41 @@ class ParserNews:
                     html = urllib2.urlopen(req, timeout=10).read()
                     soup = BeautifulSoup(html,"html.parser")
                     letters = soup.select(l["criter"])
-                    print("category:"+category+" url:"+url+"\n")
+                    #print("category:"+category+" url:"+url+"\n")
                     for link in letters:
 
-                        ln=link.get("href").decode("utf-8")
+                        #print(link.get("href"))
 
-                        if(ln.find("http://") < 0 and ln.find("https://") < 0):
-                            ln=url+ln;
-                            #print(l+"icerde\n")
-                            #print("found:"+l+" ind:"+l.find(("http://").encode('utf-8').strip())+"\n")
-                        cnt = self.getFacebookCount(ln)
-                        tc=0#self.getTwitterCount(ln)
-                        gc=self.getGoogleCount(ln)
-                        title=""
+                        ln=link.get("href")  #.decode("utf-8")
+                        if ln is None:
+                            continue
+                        b = '%s' % str(ln)
+                        ff = self.isOutLinks(outLinkCriters,b)
+                        #print("ff:%s link:%s " % (ff,ln))
 
-                        if(l["title_in_img"]=="true"):
-                            img=link.select("img")
-                            if not(img is None):
-                                title=img[0]["alt"]
-                        else:
+                        #ff=self.isOutLinks(outLinkCriters,ln)
+                        #print(ff)
+                        #print(str(ln.find(outLinkCriters[0])) + str(ln.find(outLinkCriters[1])))
+                        if(ff==0):
 
-                            title=link.get("title")
-                        #self.writeLog(title.encode('utf-8') )
-                        self.callStoredProc(cnxn,"dbo.SetDb",ln,title,category,cnt,tc,gc)
+                            if(ln.find("http://") < 0 and ln.find("https://") < 0):
+                                ln=url+ln;
+                                #print(l+"icerde\n")
+                                #print("found:"+l+" ind:"+l.find(("http://").encode('utf-8').strip())+"\n")
+                            cnt = self.getFacebookCount(ln)
+                            tc=0#self.getTwitterCount(ln)
+                            gc=self.getGoogleCount(ln)
+                            title=""
+
+                            if(l["title_in_img"]=="true"):
+                                img=link.select("img")
+                                if not(img is None):
+                                    title=img[0]["alt"]
+                            else:
+                                title=link.get("title")
+                            #self.writeLog(title.encode('utf-8') )
+                            if title is not None:
+                                self.callStoredProc(cnxn,"dbo.SetDb",ln,title,category,cnt,tc,gc)
                 except Exception as e:
                     self.writeLog(str(e))
 

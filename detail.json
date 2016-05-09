@@ -13,7 +13,7 @@
     "criter_image": ".media > img"
   },
   "diken":{
-    "criter_paragraph": ".wp-caption > p",
+    "criter_paragraph": ".entry-content > p",
     "criter_image": ".wp-caption > img"
   },
   "haberturk":{

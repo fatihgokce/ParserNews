@@ -116,6 +116,8 @@ class RootServer:
         img=soup.select(self.detailJson[host_name]["criter_image"])[0]
         res={}
         res["img"]=img['src']
+        if(res["img"].find("http://") < 0):
+            res["img"]="http:" + res["img"]
         pr = ""
         for p in letters:
             str1 = str(p).replace("</p>","\n[#pp#]").replace("<br>","\n").replace('"',"##")

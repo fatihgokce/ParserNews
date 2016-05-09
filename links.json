@@ -1,12 +1,15 @@
 {
+"out_link_criter":[
+  "/galeri/","galeri-","fotogaleri.","//kelebekgaleri","/webtv/","/galeri/","/video/","/advertorial/"
+],
 "categories":
 [
 {"name":"gündem",
 "links":
 [
 {"url":"http://www.hurriyet.com.tr","criter":".mansetSlider > li > a","title_in_img":"false"},
-{"url":"http://www.haber7.com","criter":"#headline > .news > a","title_in_img":"false"},
-{"url":"http://www.sozcu.com.tr","criter":".manset-img > a","title_in_img":"false"},
+{"url":"http://www.haber7.com","criter":"ul.slider > li > a","title_in_img":"false"},
+{"url":"http://www.sozcu.com.tr","criter":".swiper-slider > .swiper-wrapper > .swiper-slide > a","title_in_img":"false"},
 {"url":"http://www.diken.com.tr","criter":".slide-image > a","title_in_img":"true"},
 {"url":"http://www.haberturk.com","criter":".group > .ga-track","title_in_img":"false"}
 
@@ -25,7 +28,6 @@
 "name":"Teknoloji",
 "links":
 [
-{"url":"http://webrazzi.com","criter":".post-title > h2 > a","title_in_img":"false"}
 ]
 }
 ]

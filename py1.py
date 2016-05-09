@@ -106,7 +106,7 @@ class ParseSiteDb:
          dict["twitter"]="teee"
          #print(dict["facebook"])
          self.userAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.97 Safari/537.11"
-         url ='http://www.ntvspor.net/haber/haber-t/154475/yonetimden-kombine-indirimi'
+         url ='http://www.diken.com.tr/star-basyazari-davutoglunun-gidisine-anlam-veremedi-akp-tabaninda-kirilma-var/'
             #http://www.sabah.com.tr/'  ##headline > .news > a
             #'http://www.haber7.com/'  ##headline > .news > a
             #'http://www.hurriyet.com.tr/' .mansetSlider > li > a
@@ -119,7 +119,7 @@ class ParseSiteDb:
          soup = BeautifulSoup(html,"html.parser")
          letters = soup.select(criter) #.mansetSlider > li > a#sliderPager > li > a #find_all("li", class_="sliderPager")
          img=soup.select(self.detailJson[host_name]["criter_image"])[0]
-         print("img:%s pr:%s" %(img,letters[0]) )
+         print("img:%s pr:%s" %("",letters) )
 
 
 
