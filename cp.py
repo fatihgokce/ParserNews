@@ -10,6 +10,8 @@ import json
 import re
 from HTMLParser import HTMLParser
 import pyodbc
+from cgi import escape
+
 class UserComment:
     def __init__(self,un,cm):
         self.userName=un
@@ -41,7 +43,12 @@ def strip_tags(html):
     s = MLStripper()
     s.feed(html)
     return s.get_data()
-
+def escape_html(text):
+    """escape strings for display in HTML"""
+    return escape(text, quote=True).\
+           replace(u'\n', u'<br />').\
+           replace(u'\t', u'&emsp;').\
+           replace(u'  ', u' &nbsp;')
 def toJson(posts):
 
     js ='{"posts":['
@@ -60,6 +67,46 @@ class RootServer:
     @cherrypy.tools.json_out()
     @cherrypy.tools.json_in()
     @cherrypy.expose
+    def getComments(self,link_id):
+        cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
+
+        cnxn = pyodbc.connect("DRIVER={SQL Server};SERVER=198.38.92.235;DATABASE=FeedNews;UID=sa;PWD=Sapass..123")
+        cursor = cnxn.cursor()
+
+        cursor =  cursor.execute("SELECT c.[comment],u.name FROM UserComment c inner join Users u on (c.user_id=u.user_id) where link_id=%s order by c.date desc " % (link_id))
+        rows = cursor.fetchall()
+        comments = []
+        for row in rows:
+            p1={"comment":row.comment,"name":row.name}
+            comments.append(p1)
+
+
+        cnxn.close()
+        return comments
+    @cherrypy.tools.json_out()
+    @cherrypy.tools.json_in()
+    @cherrypy.expose
+    def setComment(self,comment,email,name,link_id):
+        cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
+        posts=[]
+        cnxn = pyodbc.connect("DRIVER={SQL Server};SERVER=198.38.92.235;DATABASE=FeedNews;UID=sa;PWD=Sapass..123")
+        cursor = cnxn.cursor()
+
+
+             #cursor.execute("insert into test_tb values(6, 'name')")
+             #print("gündem".encode("utf-8","ignore"))
+             #print("EXEC  %s" % ("gündem"))
+        parser = HTMLParser()
+
+        cursor =  cursor.execute(" EXEC [dbo].[SetComment] @comment = N'%s',@email = N'%s',@name = N'%s',@link_id = %s  " % (parser.unescape(comment),email,parser.unescape(name),link_id))
+        p = {"s":True}
+
+
+        cnxn.close()
+        return p
+    @cherrypy.tools.json_out()
+    @cherrypy.tools.json_in()
+    @cherrypy.expose
     def getByCategory(self,ct):
         cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
         posts=[]
@@ -74,6 +121,7 @@ class RootServer:
         rows = cursor.fetchall()
         for row in rows:
             p1={}
+            p1["link_id"]=row.link_id
             p1["link"]=row.url
             p1["title"]=row.title
             p1["sourceName"]=str.split(str(p1["link"]),".")[1]
